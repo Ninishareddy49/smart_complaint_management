@@ -1,0 +1,108 @@
+import React, { useState, useContext } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import { Lock, Mail, User } from 'lucide-react';
+
+const Register = () => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [role, setRole] = useState('USER');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const { register } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setIsLoading(true);
+        try {
+            await register({ name, email, password, role });
+            navigate('/login');
+        } catch (err) {
+            setError(err.response?.data?.message || 'Registration failed');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-darkBg py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-8 bg-white dark:bg-darkCard p-10 rounded-2xl shadow-xl transition-colors duration-300">
+                <div>
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+                        Create your account
+                    </h2>
+                    <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+                        Already have an account? <Link to="/login" className="font-medium text-primary-light hover:text-primary-dark">Sign in</Link>
+                    </p>
+                </div>
+                {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg text-sm">{error}</div>}
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    <div className="rounded-md shadow-sm space-y-4">
+                        <div className="relative">
+                            <label className="sr-only">Full Name</label>
+                            <User className="w-5 h-5 absolute top-3 left-3 text-gray-400" />
+                            <input
+                                type="text"
+                                required
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-darkSidebar focus:outline-none focus:ring-primary-light focus:border-primary-light sm:text-sm"
+                                placeholder="Full Name"
+                            />
+                        </div>
+                        <div className="relative">
+                            <label className="sr-only">Email address</label>
+                            <Mail className="w-5 h-5 absolute top-3 left-3 text-gray-400" />
+                            <input
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-darkSidebar focus:outline-none focus:ring-primary-light focus:border-primary-light sm:text-sm"
+                                placeholder="Email address"
+                            />
+                        </div>
+                        <div className="relative">
+                            <label className="sr-only">Password</label>
+                            <Lock className="w-5 h-5 absolute top-3 left-3 text-gray-400" />
+                            <input
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="appearance-none rounded-lg relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-darkSidebar focus:outline-none focus:ring-primary-light focus:border-primary-light sm:text-sm"
+                                placeholder="Password"
+                            />
+                        </div>
+                        <div>
+                           <select 
+                                value={role} 
+                                onChange={(e) => setRole(e.target.value)}
+                                className="appearance-none rounded-lg block w-full px-3 py-3 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white dark:bg-darkSidebar focus:outline-none focus:ring-primary-light focus:border-primary-light sm:text-sm"
+                            >
+                               <option value="USER">Resident / Student</option>
+                               <option value="STAFF">Maintenance Staff</option>
+                               <option value="ADMIN">Administrator</option>
+                           </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-light hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-light transition-colors duration-200"
+                        >
+                            {isLoading ? 'Creating account...' : 'Sign up'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+export default Register;

@@ -1,0 +1,91 @@
+chunk-PJEEZAML.js?v=eaf0320f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ComplaintDetail.jsx:34  GET http://localhost:8080/api/complaints/1 500 (Internal Server Error)
+dispatchXhrRequest @ axios.js?v=1e16cfb0:1784
+xhr @ axios.js?v=1e16cfb0:1649
+dispatchRequest @ axios.js?v=1e16cfb0:2210
+Promise.then
+_request @ axios.js?v=1e16cfb0:2428
+request @ axios.js?v=1e16cfb0:2324
+Axios.<computed> @ axios.js?v=1e16cfb0:2464
+wrap @ axios.js?v=1e16cfb0:8
+fetchComplaint @ ComplaintDetail.jsx:34
+(anonymous) @ ComplaintDetail.jsx:29
+commitHookEffectListMount @ chunk-PJEEZAML.js?v=eaf0320f:16915
+commitPassiveMountOnFiber @ chunk-PJEEZAML.js?v=eaf0320f:18156
+commitPassiveMountEffects_complete @ chunk-PJEEZAML.js?v=eaf0320f:18129
+commitPassiveMountEffects_begin @ chunk-PJEEZAML.js?v=eaf0320f:18119
+commitPassiveMountEffects @ chunk-PJEEZAML.js?v=eaf0320f:18109
+flushPassiveEffectsImpl @ chunk-PJEEZAML.js?v=eaf0320f:19490
+flushPassiveEffects @ chunk-PJEEZAML.js?v=eaf0320f:19447
+(anonymous) @ chunk-PJEEZAML.js?v=eaf0320f:19328
+workLoop @ chunk-PJEEZAML.js?v=eaf0320f:197
+flushWork @ chunk-PJEEZAML.js?v=eaf0320f:176
+performWorkUntilDeadline @ chunk-PJEEZAML.js?v=eaf0320f:384
+ComplaintDetail.jsx:38 Error fetching complaint details AxiosError: Request failed with status code 500
+    at settle (axios.js?v=1e16cfb0:1319:7)
+    at XMLHttpRequest.onloadend (axios.js?v=1e16cfb0:1682:7)
+    at Axios.request (axios.js?v=1e16cfb0:2328:41)
+    at async fetchComplaint (ComplaintDetail.jsx:34:19)
+fetchComplaint @ ComplaintDetail.jsx:38
+await in fetchComplaint
+(anonymous) @ ComplaintDetail.jsx:29
+commitHookEffectListMount @ chunk-PJEEZAML.js?v=eaf0320f:16915
+commitPassiveMountOnFiber @ chunk-PJEEZAML.js?v=eaf0320f:18156
+commitPassiveMountEffects_complete @ chunk-PJEEZAML.js?v=eaf0320f:18129
+commitPassiveMountEffects_begin @ chunk-PJEEZAML.js?v=eaf0320f:18119
+commitPassiveMountEffects @ chunk-PJEEZAML.js?v=eaf0320f:18109
+flushPassiveEffectsImpl @ chunk-PJEEZAML.js?v=eaf0320f:19490
+flushPassiveEffects @ chunk-PJEEZAML.js?v=eaf0320f:19447
+(anonymous) @ chunk-PJEEZAML.js?v=eaf0320f:19328
+workLoop @ chunk-PJEEZAML.js?v=eaf0320f:197
+flushWork @ chunk-PJEEZAML.js?v=eaf0320f:176
+performWorkUntilDeadline @ chunk-PJEEZAML.js?v=eaf0320f:384
+ComplaintDetail.jsx:34  GET http://localhost:8080/api/complaints/1 500 (Internal Server Error)
+dispatchXhrRequest @ axios.js?v=1e16cfb0:1784
+xhr @ axios.js?v=1e16cfb0:1649
+dispatchRequest @ axios.js?v=1e16cfb0:2210
+Promise.then
+_request @ axios.js?v=1e16cfb0:2428
+request @ axios.js?v=1e16cfb0:2324
+Axios.<computed> @ axios.js?v=1e16cfb0:2464
+wrap @ axios.js?v=1e16cfb0:8
+fetchComplaint @ ComplaintDetail.jsx:34
+(anonymous) @ ComplaintDetail.jsx:29
+commitHookEffectListMount @ chunk-PJEEZAML.js?v=eaf0320f:16915
+invokePassiveEffectMountInDEV @ chunk-PJEEZAML.js?v=eaf0320f:18324
+invokeEffectsInDev @ chunk-PJEEZAML.js?v=eaf0320f:19701
+commitDoubleInvokeEffectsInDEV @ chunk-PJEEZAML.js?v=eaf0320f:19686
+flushPassiveEffectsImpl @ chunk-PJEEZAML.js?v=eaf0320f:19503
+flushPassiveEffects @ chunk-PJEEZAML.js?v=eaf0320f:19447
+(anonymous) @ chunk-PJEEZAML.js?v=eaf0320f:19328
+workLoop @ chunk-PJEEZAML.js?v=eaf0320f:197
+flushWork @ chunk-PJEEZAML.js?v=eaf0320f:176
+performWorkUntilDeadline @ chunk-PJEEZAML.js?v=eaf0320f:384
+ComplaintDetail.jsx:38 Error fetching complaint details AxiosError: Request failed with status code 500
+    at settle (axios.js?v=1e16cfb0:1319:7)
+    at XMLHttpRequest.onloadend (axios.js?v=1e16cfb0:1682:7)
+    at Axios.request (axios.js?v=1e16cfb0:2328:41)
+    at async fetchComplaint (ComplaintDetail.jsx:34:19)
+fetchComplaint @ ComplaintDetail.jsx:38
+await in fetchComplaint
+(anonymous) @ ComplaintDetail.jsx:29
+commitHookEffectListMount @ chunk-PJEEZAML.js?v=eaf0320f:16915
+invokePassiveEffectMountInDEV @ chunk-PJEEZAML.js?v=eaf0320f:18324
+invokeEffectsInDev @ chunk-PJEEZAML.js?v=eaf0320f:19701
+commitDoubleInvokeEffectsInDEV @ chunk-PJEEZAML.js?v=eaf0320f:19686
+flushPassiveEffectsImpl @ chunk-PJEEZAML.js?v=eaf0320f:19503
+flushPassiveEffects @ chunk-PJEEZAML.js?v=eaf0320f:19447
+(anonymous) @ chunk-PJEEZAML.js?v=eaf0320f:19328
+workLoop @ chunk-PJEEZAML.js?v=eaf0320f:197
+flushWork @ chunk-PJEEZAML.js?v=eaf0320f:176
+performWorkUntilDeadline @ chunk-PJEEZAML.js?v=eaf0320f:384
+
+
+
+
+
+
+open terminal 1 and paste this  : ./mvnw clean spring-boot:run
+open terminal 2 : 
+cd frontend
+npm run dev
