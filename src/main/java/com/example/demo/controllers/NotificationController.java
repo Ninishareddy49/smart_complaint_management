@@ -26,4 +26,9 @@ public class NotificationController {
         notificationService.markAsRead(id);
         return ResponseEntity.ok(new com.example.demo.dto.MessageResponse("Notification marked as read"));
     }
+
+    @GetMapping("/unread-count")
+    public ResponseEntity<?> getUnreadCount(Authentication authentication) {
+        return ResponseEntity.ok(notificationService.getUnreadCountByUser(authentication.getName()));
+    }
 }

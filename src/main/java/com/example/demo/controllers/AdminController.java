@@ -54,4 +54,34 @@ public class AdminController {
 
         return ResponseEntity.ok(new AnalyticsDto(total, open, resolved));
     }
+
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/users/{id}")
+    public ResponseEntity<?> deleteUser(@org.springframework.web.bind.annotation.PathVariable("id") Long id) {
+        try {
+            userRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to delete user: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/complaints")
+    public ResponseEntity<?> getAllComplaints() {
+        return ResponseEntity.ok(complaintRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt")));
+    }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/complaints/{id}")
+    @org.springframework.transaction.annotation.Transactional
+    public ResponseEntity<?> deleteComplaint(@org.springframework.web.bind.annotation.PathVariable("id") Long id) {
+        try {
+            jdbcTemplate.update("DELETE FROM complaint_updates WHERE complaint_id = ?", id);
+            complaintRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to delete complaint: " + e.getMessage());
+        }
+    }
 }

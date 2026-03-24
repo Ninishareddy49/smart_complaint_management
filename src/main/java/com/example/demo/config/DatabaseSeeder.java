@@ -17,34 +17,49 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() == 0) {
-            // Create Admin
-            AppUser admin = new AppUser();
+        try {
+            jdbcTemplate.execute("ALTER TABLE notifications DROP COLUMN is_read");
+            System.out.println("Database Migration: Dropped duplicate 'is_read' column.");
+        } catch (Exception e) {
+            // Ignore if column doesn't exist
+        }
+
+        // Ensure Admin exists and password matches
+        AppUser admin = userRepository.findByEmail("admin@scms.com").orElse(new AppUser());
+        if (admin.getId() == null) {
             admin.setName("System Administrator");
             admin.setEmail("admin@scms.com");
-            admin.setPasswordHash(passwordEncoder.encode("admin123"));
             admin.setRole(RoleType.ROLE_ADMIN);
-            userRepository.save(admin);
+        }
+        admin.setPasswordHash(passwordEncoder.encode("admin123"));
+        userRepository.save(admin);
+        System.out.println("Admin secured: admin@scms.com / admin123");
 
-            // Create Staff
-            AppUser staff = new AppUser();
+        // Ensure Staff exists
+        AppUser staff = userRepository.findByEmail("staff@scms.com").orElse(new AppUser());
+        if (staff.getId() == null) {
             staff.setName("Support Resolver");
             staff.setEmail("staff@scms.com");
-            staff.setPasswordHash(passwordEncoder.encode("staff123"));
             staff.setRole(RoleType.ROLE_STAFF);
-            userRepository.save(staff);
+        }
+        staff.setPasswordHash(passwordEncoder.encode("staff123"));
+        userRepository.save(staff);
+        System.out.println("Staff secured: staff@scms.com / staff123");
 
-            // Create Student
-            AppUser student = new AppUser();
+        // Ensure Student exists
+        AppUser student = userRepository.findByEmail("student@scms.com").orElse(new AppUser());
+        if (student.getId() == null) {
             student.setName("Alex Student");
             student.setEmail("student@scms.com");
-            student.setPasswordHash(passwordEncoder.encode("student123"));
             student.setRole(RoleType.ROLE_USER);
-            userRepository.save(student);
-
-            System.out.println("Database seeded with default users.");
         }
+        student.setPasswordHash(passwordEncoder.encode("student123"));
+        userRepository.save(student);
+        System.out.println("User secured: student@scms.com / student123");
     }
 }

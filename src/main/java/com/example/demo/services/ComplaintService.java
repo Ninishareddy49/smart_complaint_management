@@ -106,9 +106,22 @@ public class ComplaintService {
         update.setUpdatedBy(user);
         complaintUpdateRepository.save(update);
 
-        // Notify user about status change
-        notificationService.createNotification(complaint.getUser(), "Complaint Status Updated", 
-            "Your complaint '" + complaint.getTitle() + "' status has been changed to " + request.getStatus());
+        // Notify user about status change with specific messages
+        String notificationTitle = "Complaint Status Updated";
+        String notificationMessage = "Your complaint '" + complaint.getTitle() + "' status has been changed to " + request.getStatus();
+
+        if (request.getStatus() == ComplaintStatus.IN_PROGRESS) {
+            notificationTitle = "Work Started on Your Complaint";
+            notificationMessage = "A specialist is now working on your report: " + complaint.getTitle();
+        } else if (request.getStatus() == ComplaintStatus.RESOLVED) {
+            notificationTitle = "Complaint Resolved";
+            notificationMessage = "Action has been completed for your report: " + complaint.getTitle() + ". Please review and close the case.";
+        } else if (request.getStatus() == ComplaintStatus.CLOSED) {
+            notificationTitle = "Case Finalized";
+            notificationMessage = "Your case has been officially closed: " + complaint.getTitle();
+        }
+
+        notificationService.createNotification(complaint.getUser(), notificationTitle, notificationMessage);
 
         return mapToDto(updatedComplaint);
     }

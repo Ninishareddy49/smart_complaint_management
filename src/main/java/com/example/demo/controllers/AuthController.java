@@ -94,4 +94,11 @@ public class AuthController {
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
+
+    @GetMapping("/debug/users")
+    public ResponseEntity<?> debugUsers() {
+        return ResponseEntity.ok(userRepository.findAll().stream()
+            .map(u -> u.getEmail() + " (" + u.getRole() + ")")
+            .collect(Collectors.toList()));
+    }
 }

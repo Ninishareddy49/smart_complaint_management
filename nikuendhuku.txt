@@ -85,7 +85,7 @@ performWorkUntilDeadline @ chunk-PJEEZAML.js?v=eaf0320f:384
 
 
 
-open terminal 1 and paste this  : ./mvnw clean spring-boot:run
-open terminal 2 : 
+open terminal 1 and paste this  : 
+open terminal 2 : ./mvnw clean spring-boot:run
 cd frontend
 npm run dev
