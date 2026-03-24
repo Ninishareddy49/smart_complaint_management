@@ -119,5 +119,3 @@ To package the entire application for production deployment:
 The resulting `.jar` file in `target/` contains the full production-ready server.
 
 ---
-
-© 2026 Smart Complaint Management System. Built for Enterprise Efficiency.
