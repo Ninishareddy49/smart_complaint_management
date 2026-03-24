@@ -12,7 +12,10 @@ import {
   CheckCircle2,
   TrendingUp,
   MessageSquare,
-  UserPlus
+  UserPlus,
+  PlayCircle,
+  CheckCircle,
+  HandMetal
 } from 'lucide-react';
 import API from '../services/api';
 
@@ -24,6 +27,8 @@ export default function ComplaintDetail() {
   const [newStatus, setNewStatus] = useState('');
   const [comment, setComment] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [closureNotes, setClosureNotes] = useState('');
+  const [isClosing, setIsClosing] = useState(false);
   const [staffList, setStaffList] = useState([]);
   const [selectedStaff, setSelectedStaff] = useState('');
   const [isAssigning, setIsAssigning] = useState(false);
@@ -31,6 +36,7 @@ export default function ComplaintDetail() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const isAdmin = user.roles?.includes('ROLE_ADMIN');
   const isStaff = user.roles?.includes('ROLE_STAFF') || isAdmin;
+  const isOwner = complaint?.userName === user.name;
 
   useEffect(() => {
     fetchComplaint();
@@ -60,13 +66,16 @@ export default function ComplaintDetail() {
     }
   };
 
-  const handleUpdateStatus = async (e) => {
-    e.preventDefault();
+  const handleUpdateStatus = async (e, statusOverride = null, commentOverride = null) => {
+    if (e) e.preventDefault();
     setIsUpdating(true);
     try {
+      const statusToShip = statusOverride || newStatus;
+      const commentToShip = commentOverride || comment;
+
       await API.put(`/api/complaints/${id}/status`, {
-        status: newStatus,
-        comment: comment
+        status: statusToShip,
+        comment: commentToShip
       });
       setComment('');
       fetchComplaint();
@@ -288,68 +297,198 @@ export default function ComplaintDetail() {
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-slate-900 rounded-[32px] p-8 text-white shadow-2xl shadow-slate-300"
+                className="bg-slate-900 rounded-[32px] p-8 text-white shadow-2xl shadow-slate-300 space-y-8"
               >
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+                <h2 className="text-xl font-bold flex items-center gap-3">
                   <div className="p-2 bg-blue-500/20 rounded-xl text-blue-400">
                     <CheckCircle2 size={20} />
                   </div>
-                  Update Status
+                  Case Management
                 </h2>
-                <form onSubmit={handleUpdateStatus} className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Progress Stage</label>
-                    <select 
-                      className="w-full bg-slate-800 border border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none"
-                      value={newStatus}
-                      onChange={(e) => setNewStatus(e.target.value)}
-                    >
-                      <option value="OPEN">Open</option>
-                      <option value="ASSIGNED">Assigned</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="RESOLVED">Resolved</option>
-                      <option value="CLOSED">Closed</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Resolution Notes</label>
-                    <textarea 
-                      className="w-full bg-slate-800 border border-slate-700 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all h-32 resize-none"
-                      placeholder="Detail the actions taken..."
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                      required
-                    ></textarea>
-                  </div>
-                  <button 
-                    type="submit"
-                    disabled={isUpdating}
-                    className="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-[20px] font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-blue-900/40 flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95"
-                  >
-                    {isUpdating ? 'Saving...' : <>Save Update <Send size={16} /></>}
-                  </button>
-                </form>
+
+                <div className="space-y-4">
+                    {/* Primary Workflow Buttons */}
+                    {!complaint.assignedStaffName && (
+                        <button 
+                            onClick={() => handleUpdateStatus(null, 'ASSIGNED', 'I am taking charge of this case.')}
+                            disabled={isUpdating}
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 py-4 rounded-[20px] font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                        >
+                            <HandMetal size={18} /> Accept Task
+                        </button>
+                    )}
+
+                    {complaint.status === 'ASSIGNED' && (
+                        <div className="space-y-4">
+                            <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest ml-1 text-center">Next Objective</p>
+                            <button 
+                                onClick={() => handleUpdateStatus(null, 'IN_PROGRESS', 'I have initiated the investigation and am actively working on the resolution.')}
+                                disabled={isUpdating}
+                                className="w-full bg-purple-600 hover:bg-purple-700 py-5 rounded-[24px] font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg shadow-purple-900/40 active:scale-95"
+                            >
+                                <PlayCircle size={20} /> Deploy Start Protocol
+                            </button>
+                        </div>
+                    )}
+
+                    {complaint.status === 'IN_PROGRESS' && (
+                        <div className="space-y-4">
+                            <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest ml-1 text-center">Case Conclusion</p>
+                            <button 
+                                onClick={() => {
+                                    if (comment.trim()) {
+                                        handleUpdateStatus(null, 'RESOLVED', comment);
+                                    } else {
+                                        setNewStatus('RESOLVED');
+                                        document.getElementById('resolution-comment')?.focus();
+                                    }
+                                }}
+                                disabled={isUpdating}
+                                className="w-full bg-emerald-600 hover:bg-emerald-700 py-5 rounded-[24px] font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg shadow-emerald-900/40 active:scale-95"
+                            >
+                                <CheckCircle size={20} /> Mark Task as Completed
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {complaint.status !== 'RESOLVED' && complaint.status !== 'CLOSED' && (
+                    <div className="border-t border-slate-800 pt-6">
+                        <form onSubmit={handleUpdateStatus} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Protocol Action</label>
+                            <select 
+                            className="w-full bg-slate-800 border border-slate-700 rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none"
+                            value={newStatus}
+                            onChange={(e) => setNewStatus(e.target.value)}
+                            >
+                            <option value="OPEN">Initialization</option>
+                            <option value="ASSIGNED">Assignment Locked</option>
+                            <option value="IN_PROGRESS">Execution Phase</option>
+                            <option value="RESOLVED">Resolution Verified</option>
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Case Notes / Briefing</label>
+                            <textarea 
+                            id="resolution-comment"
+                            className="w-full bg-slate-800 border border-slate-700 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all h-32 resize-none"
+                            placeholder="Detail actions taken for this state transition..."
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            required
+                            ></textarea>
+                        </div>
+                        <button 
+                            type="submit"
+                            disabled={isUpdating}
+                            className="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-[20px] font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-blue-900/40 flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95"
+                        >
+                            {isUpdating ? 'Synchronizing...' : <>Update Case Data <Send size={16} /></>}
+                        </button>
+                        </form>
+                    </div>
+                )}
+
+                {(complaint.status === 'RESOLVED' || complaint.status === 'CLOSED') && (
+                    <div className="bg-slate-800/50 p-6 rounded-[24px] border border-slate-700 text-center space-y-3">
+                        <div className="bg-emerald-500/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
+                            <CheckCircle2 size={24} className="text-emerald-400" />
+                        </div>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Case Processed</p>
+                        <p className="text-sm font-medium text-slate-300">This intelligence report has been finalized and no further updates are required.</p>
+                    </div>
+                )}
               </motion.div>
             )}
 
-            {/* Support section for users */}
-            {!isStaff && (
+            {/* Support section for users (Original Reporter) */}
+            {isOwner && complaint.status !== 'CLOSED' && (
                <motion.div 
                  initial={{ opacity: 0, scale: 0.95 }}
                  animate={{ opacity: 1, scale: 1 }}
-                 className="glass rounded-[32px] p-8 text-slate-900 shadow-xl border border-white"
+                 className="glass rounded-[32px] p-8 text-slate-900 shadow-xl border border-white space-y-6"
                >
-                <div className="p-3 bg-blue-600 rounded-2xl text-white w-fit mb-6">
-                    <MessageSquare size={24} />
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-600 rounded-xl text-white">
+                        <MessageSquare size={20} />
+                    </div>
+                    <h3 className="text-xl font-extrabold">Reporter Actions</h3>
                 </div>
-                <h3 className="text-xl font-extrabold mb-3">Case Support</h3>
-                <p className="text-slate-500 text-sm font-semibold leading-relaxed mb-8">
-                  Need to provide more context? Our support team is here to assist you while your case is being reviewed.
-                </p>
-                <button className="w-full bg-slate-900 text-white font-black py-4 rounded-[20px] text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg active:scale-95">
-                  Contact Support
-                </button>
+
+                {complaint.status === 'RESOLVED' ? (
+                    <div className="space-y-4">
+                        <p className="text-slate-500 text-sm font-semibold leading-relaxed">
+                            A specialist has marked this case as resolved. If you are satisfied with the outcome, please finalize and close this case.
+                        </p>
+                        <textarea 
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all h-24 resize-none"
+                          placeholder="Final feedback (optional)..."
+                          value={closureNotes}
+                          onChange={(e) => setClosureNotes(e.target.value)}
+                        ></textarea>
+                        <button 
+                            onClick={async () => {
+                                setIsClosing(true);
+                                try {
+                                    await API.put(`/api/complaints/${id}/status`, {
+                                        status: 'CLOSED',
+                                        comment: closureNotes || 'User confirmed resolution and closed the case.'
+                                    });
+                                    fetchComplaint();
+                                } catch (err) {
+                                    console.error("Error closing case", err);
+                                } finally {
+                                    setIsClosing(false);
+                                }
+                            }}
+                            disabled={isClosing}
+                            className="w-full bg-slate-900 text-white font-black py-4 rounded-[20px] text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2"
+                        >
+                            {isClosing ? 'Finalizing...' : <>Finalize & Close Case <CheckCircle size={18} /></>}
+                        </button>
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        <p className="text-slate-500 text-sm font-semibold leading-relaxed">
+                            Need to provide more context? Our support team is here to assist you while your case is being reviewed.
+                        </p>
+                        <button className="w-full bg-slate-900 text-white font-black py-4 rounded-[20px] text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg active:scale-95 font-bold">
+                        Internal Support
+                        </button>
+                    </div>
+                )}
               </motion.div>
+            )}
+
+            {/* Admin specific control for unresolved or stuck cases */}
+            {isAdmin && complaint.status === 'RESOLVED' && !isOwner && (
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-red-50 rounded-[32px] p-8 text-red-900 border border-red-100 shadow-lg space-y-4"
+                >
+                    <h3 className="text-xl font-extrabold flex items-center gap-2">
+                        <AlertCircle size={24} className="text-red-600" /> Administrative Closure
+                    </h3>
+                    <p className="text-sm font-medium opacity-80">As an Admin, you can manually close this case if the reporter is unresponsive.</p>
+                    <button 
+                        onClick={async () => {
+                            try {
+                                await API.put(`/api/complaints/${id}/status`, {
+                                    status: 'CLOSED',
+                                    comment: 'Administrative closure (Automatic).'
+                                });
+                                fetchComplaint();
+                            } catch (err) {
+                                console.error("Error closing case", err);
+                            }
+                        }}
+                        className="w-full bg-red-600 text-white font-black py-4 rounded-[20px] text-xs uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-200"
+                    >
+                        Force Close Case
+                    </button>
+                </motion.div>
             )}
           </div>
         </div>

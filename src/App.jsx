@@ -8,6 +8,7 @@ import Notifications from './pages/Notifications';
 import StaffTasks from './pages/StaffTasks';
 import ComplaintDetail from './pages/ComplaintDetail';
 import Admin from './pages/Admin';
+import AdminComplaints from './pages/AdminComplaints';
 import ProtectedRoute from './components/ProtectedRoute';
 import RoleBasedRoute from './components/RoleBasedRoute';
 
@@ -77,6 +78,15 @@ function App() {
           element={
             <RoleBasedRoute allowedRoles={['ROLE_ADMIN']}>
               <Admin />
+            </RoleBasedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/admin/complaints" 
+          element={
+            <RoleBasedRoute allowedRoles={['ROLE_ADMIN']}>
+              <AdminComplaints />
             </RoleBasedRoute>
           } 
         />

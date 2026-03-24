@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import API from '../services/api';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -7,7 +9,8 @@ import {
   Settings, 
   LogOut, 
   ShieldCheck,
-  ClipboardList
+  ClipboardList,
+  Database
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -20,6 +23,25 @@ export default function Sidebar() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
+  };
+
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (user.id) {
+        fetchUnreadCount();
+        const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30s
+        return () => clearInterval(interval);
+    }
+  }, []);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await API.get('/api/notifications/unread-count');
+      setUnreadCount(res.data);
+    } catch (err) {
+      console.error("Error fetching unread count", err);
+    }
   };
 
   const menuItems = [
@@ -54,10 +76,17 @@ export default function Sidebar() {
       roles: ['ROLE_ADMIN']
     },
     { 
+      title: 'Global Complaints', 
+      icon: <Database size={20} />, 
+      path: '/admin/complaints',
+      roles: ['ROLE_ADMIN']
+    },
+    { 
       title: 'Notifications', 
       icon: <Bell size={20} />, 
       path: '/notifications',
-      roles: ['ROLE_USER', 'ROLE_STAFF', 'ROLE_ADMIN']
+      roles: ['ROLE_USER', 'ROLE_STAFF', 'ROLE_ADMIN'],
+      badge: unreadCount > 0 ? unreadCount : null
     },
   ];
 
@@ -69,7 +98,16 @@ export default function Sidebar() {
         <div className="bg-blue-600 p-2 rounded-xl shadow-lg">
           <ShieldCheck className="w-6 h-6 text-white" />
         </div>
-        <span className="font-bold text-xl tracking-tight">SCMS</span>
+        <div className="flex flex-col">
+          <span className="font-bold text-xl tracking-tight leading-tight">SCMS</span>
+          <span className={`text-[9px] font-black px-1.5 py-0.5 mt-1 rounded uppercase tracking-widest w-max ${
+            role === 'ROLE_ADMIN' ? 'bg-red-500/20 text-red-400' :
+            role === 'ROLE_STAFF' ? 'bg-purple-500/20 text-purple-400' :
+            'bg-emerald-500/20 text-emerald-400'
+          }`}>
+            {role.replace('ROLE_', '')}
+          </span>
+        </div>
       </div>
 
       <nav className="flex-1 px-4 py-4 space-y-2">
@@ -89,7 +127,12 @@ export default function Sidebar() {
                 {item.icon}
               </span>
               <span className="font-medium">{item.title}</span>
-              {isActive && (
+              {item.badge && (
+                <span className="ml-auto bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-[0_0_8px_rgba(239,68,68,0.4)]">
+                  {item.badge}
+                </span>
+              )}
+              {isActive && !item.badge && (
                 <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.6)]" />
               )}
             </Link>

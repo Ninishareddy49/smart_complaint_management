@@ -12,11 +12,13 @@ import {
   User,
   MapPin,
   AlertCircle,
-  LayoutDashboard
+  LayoutDashboard,
+  HandMetal
 } from 'lucide-react';
 import API from '../services/api';
 
 export default function StaffTasks() {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState('ALL'); // ALL, ASSIGNED, IN_PROGRESS, RESOLVED
@@ -138,9 +140,14 @@ export default function StaffTasks() {
                         <span className={`text-[9px] font-black px-3.5 py-1.5 rounded-full uppercase tracking-widest border ${getStatusColor(task.status)} shadow-sm`}>
                           {task.status.replace('_', ' ')}
                         </span>
-                        <span className="text-[10px] font-bold text-slate-400 flex items-center gap-2 uppercase tracking-widest">
+                        <span className={`text-[10px] font-bold text-slate-400 flex items-center gap-2 uppercase tracking-widest`}>
                           <Clock size={14} className="text-slate-300" /> Received {new Date(task.createdAt).toLocaleDateString()}
                         </span>
+                        {task.assignedStaffName === user.name && (
+                            <span className="text-[9px] font-black px-3.5 py-1.5 rounded-full uppercase tracking-widest bg-slate-900 text-white shadow-sm flex items-center gap-1.5 ml-auto">
+                                <HandMetal size={12} className="text-blue-400" /> Your Task
+                            </span>
+                        )}
                     </div>
                     
                     <div className="space-y-2">

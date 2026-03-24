@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { 
   Users, 
   ShieldCheck, 
@@ -10,7 +11,9 @@ import {
   Calendar,
   UserCheck,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  Trash2,
+  Database
 } from 'lucide-react';
 import API from '../services/api';
 
@@ -18,6 +21,7 @@ export default function Admin() {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [analytics, setAnalytics] = useState({ total: 0, open: 0, resolved: 0 });
 
   useEffect(() => {
     fetchUsers();
@@ -25,10 +29,14 @@ export default function Admin() {
 
   const fetchUsers = async () => {
     try {
-      const res = await API.get('/api/admin/users');
-      setUsers(res.data);
+      const [usersRes, analyticsRes] = await Promise.all([
+        API.get('/api/admin/users'),
+        API.get('/api/admin/analytics')
+      ]);
+      setUsers(usersRes.data);
+      setAnalytics(analyticsRes.data);
     } catch (err) {
-      console.error("Error fetching users", err);
+      console.error("Error fetching admin data", err);
     } finally {
       setIsLoading(false);
     }
@@ -38,6 +46,18 @@ export default function Admin() {
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+    
+    try {
+      await API.delete(`/api/admin/users/${userId}`);
+      setUsers(users.filter(u => u.id !== userId));
+    } catch (err) {
+      console.error("Error deleting user", err);
+      alert("Failed to delete user. They might be tied to existing complaints.");
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -66,6 +86,13 @@ export default function Admin() {
             <p className="text-slate-500 font-bold mt-1 text-lg">Manage personnel and system access protocols.</p>
           </motion.div>
           <motion.div variants={itemVariants} className="flex items-center gap-3">
+             <Link 
+              to="/admin/complaints" 
+              className="flex items-center gap-2 px-5 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-sm uppercase tracking-widest rounded-[20px] transition-all shadow-lg active:scale-95 border border-slate-800 mr-2"
+            >
+              <Database size={18} />
+              View All Complaints
+            </Link>
              <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 group-focus-within:text-[var(--color-primary-600)] transition-colors" />
               <input 
@@ -99,9 +126,9 @@ export default function Admin() {
                 </div>
                 <div>
                     <h4 className="text-3xl font-black text-slate-900">
-                        {users.filter(u => u.role === 'ROLE_STAFF').length}
+                        {analytics.open}
                     </h4>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Specialized Resolvers</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Active Pipeline</p>
                 </div>
             </motion.div>
             <motion.div variants={itemVariants} className="bg-gradient-to-br from-indigo-600 to-primary-700 p-8 rounded-[32px] text-white shadow-xl shadow-indigo-100 flex items-center gap-6">
@@ -109,8 +136,10 @@ export default function Admin() {
                     <TrendingUp size={24} className="text-white" />
                 </div>
                 <div>
-                    <h4 className="text-3xl font-black">94%</h4>
-                    <p className="text-[10px] font-black text-indigo-100 uppercase tracking-widest mt-1">System Efficiency</p>
+                    <h4 className="text-3xl font-black">
+                        {analytics.total > 0 ? Math.round((analytics.resolved / analytics.total) * 100) : 0}%
+                    </h4>
+                    <p className="text-[10px] font-black text-indigo-100 uppercase tracking-widest mt-1">Resolution Efficiency</p>
                 </div>
             </motion.div>
         </div>
@@ -170,8 +199,15 @@ export default function Admin() {
                     <button className="px-6 py-3 bg-white border border-slate-200 rounded-[18px] text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm active:scale-95">
                       View Profile
                     </button>
-                    <button className="p-3 bg-slate-50 border border-slate-200 rounded-[18px] text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-100 transition-all">
+                    <button className="p-3 bg-slate-50 border border-slate-200 rounded-[18px] text-slate-400 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-100 transition-all">
                       <ShieldCheck size={20} />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteUser(user.id)}
+                      className="p-3 bg-slate-50 border border-slate-200 rounded-[18px] text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-100 transition-all"
+                      title="Delete User"
+                    >
+                      <Trash2 size={20} />
                     </button>
                   </div>
                 </motion.div>

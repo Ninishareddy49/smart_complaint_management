@@ -193,25 +193,7 @@ export default function Dashboard() {
 
           {/* Side Panels */}
           <div className="space-y-8">
-            <motion.div 
-              variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-              className="bg-gradient-to-br from-primary-600 via-primary-700 to-indigo-800 p-10 rounded-[40px] text-white shadow-2xl shadow-primary-200 relative overflow-hidden"
-            >
-              <div className="relative z-10 space-y-6">
-                <div className="bg-white/20 w-fit p-3 rounded-2xl backdrop-blur-md">
-                    <TrendingUp className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                    <h3 className="text-2xl font-black leading-tight">Elevate System Efficiency</h3>
-                    <p className="text-primary-100 text-sm font-bold mt-2 leading-relaxed opacity-80">Access priority resolution pipelines or generate advanced reports.</p>
-                </div>
-                <button className="bg-white text-primary-700 font-extrabold px-8 py-4 rounded-[20px] shadow-xl hover:bg-primary-50 transition-all text-xs uppercase tracking-widest active:scale-95">
-                  Launch Command Center
-                </button>
-              </div>
-              <Users className="absolute -right-12 -bottom-12 w-64 h-64 text-white/10 rotate-12" />
-            </motion.div>
+
 
             <motion.div 
               variants={itemVariants}
@@ -229,13 +211,7 @@ export default function Dashboard() {
                   </span>
                   <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all font-bold" />
                 </button>
-                <button className="w-full flex items-center justify-between p-5 rounded-[24px] bg-white border border-slate-100 text-slate-700 font-black uppercase tracking-widest text-[10px] hover:bg-amber-600 hover:text-white hover:border-amber-600 transition-all group shadow-sm">
-                  <span className="flex items-center gap-3">
-                    <FileText size={20} className="text-amber-600 group-hover:text-white" />
-                    Extract Intelligence
-                  </span>
-                  <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
-                </button>
+
               </div>
             </motion.div>
           </div>
