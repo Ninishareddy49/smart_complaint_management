@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # IDE
 .idea/
 .vscode/
@@ -17,44 +16,37 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 
-# Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/.env*
-!frontend/.env.example
-
 # Logs
+logs
 *.log
 boot_log.txt
 boot_log_clean.txt
 issues.txt
-
-# OS
-.DS_Store
-Thumbs.db
-=======
-# Logs
-logs
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment and Node
+.env
+frontend/node_modules/
+frontend/dist/
+frontend/.env*
+!frontend/.env.example
 node_modules
 dist
 dist-ssr
 *.local
 
 # Editor directories and files
-.vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
->>>>>>> 1f0b2a7 (Added new features and integrations)
